@@ -88,15 +88,29 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator Dash()
     {
+        Collider2D collider = GetComponent<Collider2D>();
         canDash = false;
         isDashing = true;
+
+        collider.isTrigger = true;
         rb.velocity = new Vector2(transform.localScale.x *moveDir.x * dashingPower, transform.localScale.y * moveDir.y * dashingPower);
         tr.emitting = true;
+
         yield return new WaitForSeconds(dashingTime);
+        collider.isTrigger = false;
+
         tr.emitting = false;
         isDashing = false;
         yield return new WaitForSeconds(dashingCooldown);
         canDash = true;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Enemy") && isDashing)
+        {
+            Destroy(collision.gameObject);
+        }
     }
 }
 
